@@ -1,0 +1,672 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>스테이토도 · 강화</title>
+<meta name="description" content="강화 옛 남문 곁, 1층 독일빵집 건물 위의 작은 숙소. 작은 방, 그만큼 포근한 하룻밤. 스테이토도(구 남문장).">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5efe4;
+    --bg2: #ece3d3;
+    --card: #fbf8f2;
+    --ink: #2a2420;
+    --ink2: #6e6157;
+    --ink3: #9a8c7e;
+    --line: #dccfbb;
+    --accent: #b0603a;
+    --accent-ink: #fff8f0;
+    --lamp: #f2b765;
+    --lamp-soft: rgba(242, 183, 101, .28);
+    --sky-top: #2b3150;
+    --sky-bot: #c98a6c;
+    --wall: #e9dcc6;
+    --wall-dark: #cdbb9f;
+    --shadow: 0 1px 2px rgba(60, 40, 20, .06), 0 8px 24px rgba(60, 40, 20, .07);
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #1a1815; --bg2: #221f1b; --card: #25221d; --ink: #efe6d8; --ink2: #b3a594; --ink3: #82766a;
+      --line: #3a342c; --accent: #e09a6a; --accent-ink: #1a1815; --lamp: #f5c178; --lamp-soft: rgba(245, 193, 120, .22);
+      --sky-top: #121528; --sky-bot: #4a3a48; --wall: #4a4036; --wall-dark: #3a322a;
+      --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px rgba(0, 0, 0, .25);
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #1a1815; --bg2: #221f1b; --card: #25221d; --ink: #efe6d8; --ink2: #b3a594; --ink3: #82766a;
+    --line: #3a342c; --accent: #e09a6a; --accent-ink: #1a1815; --lamp: #f5c178; --lamp-soft: rgba(245, 193, 120, .22);
+    --sky-top: #121528; --sky-bot: #4a3a48; --wall: #4a4036; --wall-dark: #3a322a;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px rgba(0, 0, 0, .25);
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: "Noto Sans KR", system-ui, sans-serif; font-weight: 400; line-height: 1.75;
+    word-break: keep-all; -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; }
+  img { max-width: 100%; display: block; }
+  .serif { font-family: "Gowun Batang", serif; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 16px; }
+  @media (min-width: 720px) { .wrap { padding: 0 32px; } }
+
+  /* 상단 */
+  header.top {
+    position: sticky; top: 0; z-index: 20;
+    background: color-mix(in srgb, var(--bg) 86%, transparent);
+    backdrop-filter: blur(10px); border-bottom: 1px solid transparent; transition: border-color .3s;
+  }
+  header.top.scrolled { border-bottom-color: var(--line); }
+  .top .wrap { display: flex; align-items: center; justify-content: space-between; height: 60px; }
+  .logo { text-decoration: none; display: flex; align-items: baseline; gap: 8px; }
+  .logo b { font-family: "Gowun Batang", serif; font-size: 20px; letter-spacing: .02em; }
+  .logo small { font-size: 11px; color: var(--ink3); letter-spacing: .18em; }
+  nav.menu { display: none; gap: 28px; font-size: 14px; color: var(--ink2); }
+  nav.menu a { text-decoration: none; }
+  nav.menu a:hover { color: var(--ink); }
+  @media (min-width: 860px) { nav.menu { display: flex; } }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px; border: 0; cursor: pointer;
+    background: var(--accent); color: var(--accent-ink); text-decoration: none;
+    font: 500 14px/1 "Noto Sans KR", sans-serif; padding: 12px 20px; border-radius: 999px;
+    transition: transform .2s, box-shadow .2s;
+  }
+  .btn:hover { transform: translateY(-1px); box-shadow: 0 6px 18px color-mix(in srgb, var(--accent) 35%, transparent); }
+  .btn.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+  .btn.sm { padding: 9px 16px; font-size: 13px; }
+
+  /* 첫 화면 */
+  .hero { padding: 40px 0 72px; }
+  .hero .wrap { display: grid; gap: 40px; align-items: center; }
+  @media (min-width: 860px) { .hero .wrap { grid-template-columns: 1.05fr .95fr; gap: 56px; } .hero { padding: 64px 0 96px; } }
+  .eyebrow { font-size: 12px; letter-spacing: .22em; color: var(--accent); text-transform: uppercase; margin: 0 0 18px; }
+  .hero h1 { font-family: "Gowun Batang", serif; font-weight: 700; font-size: clamp(38px, 7vw, 64px); line-height: 1.25; margin: 0 0 22px; letter-spacing: -.01em; }
+  .hero h1 em { font-style: normal; color: var(--accent); }
+  .hero p.lead { font-size: 17px; color: var(--ink2); margin: 0 0 32px; max-width: 30em; }
+  .hero .actions { display: flex; flex-wrap: wrap; gap: 10px; }
+  .hero-art {
+    position: relative; aspect-ratio: 5 / 6; border-radius: 28px; overflow: hidden; box-shadow: var(--shadow);
+    background: linear-gradient(var(--sky-top), var(--sky-bot));
+  }
+  .hero-art svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .photo-slot { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .win { fill: #3b3530; transition: fill 1.2s ease; }
+  .win.on { fill: var(--lamp); filter: drop-shadow(0 0 6px var(--lamp)); }
+  .star { fill: #fff; animation: twinkle 4s ease-in-out infinite; }
+  @keyframes twinkle { 50% { opacity: .25; } }
+
+  /* 공통 섹션 */
+  section { padding: 80px 0; }
+  @media (min-width: 860px) { section { padding: 112px 0; } }
+  .sec-head { margin-bottom: 44px; max-width: 640px; }
+  .sec-head h2 { font-family: "Gowun Batang", serif; font-size: clamp(28px, 4.4vw, 40px); line-height: 1.35; margin: 0 0 14px; font-weight: 700; }
+  .sec-head p { color: var(--ink2); margin: 0; font-size: 16px; }
+  .alt { background: var(--bg2); }
+
+  /* 오늘의 할 일 */
+  .todo-grid { display: grid; gap: 32px; align-items: center; }
+  @media (min-width: 860px) { .todo-grid { grid-template-columns: 1fr 1fr; gap: 64px; } }
+  .note {
+    background: var(--card); border-radius: 18px; padding: 30px 28px 26px; box-shadow: var(--shadow);
+    position: relative; transform: rotate(-1deg);
+    background-image: repeating-linear-gradient(transparent 0 43px, var(--line) 43px 44px);
+    background-position: 0 62px;
+  }
+  .note::before { content: ""; position: absolute; top: -10px; left: 50%; width: 84px; height: 22px; transform: translateX(-50%) rotate(2deg); background: color-mix(in srgb, var(--accent) 30%, transparent); border-radius: 3px; }
+  .note h3 { margin: 0 0 8px; font-family: "Gowun Batang", serif; font-size: 20px; }
+  .note ul { list-style: none; margin: 0; padding: 0; }
+  .note li { min-height: 44px; display: flex; align-items: center; }
+  .note label { display: flex; align-items: center; gap: 12px; cursor: pointer; font-size: 16px; width: 100%; }
+  .note input { appearance: none; width: 20px; height: 20px; border: 1.5px solid var(--ink3); border-radius: 5px; flex: none; display: grid; place-items: center; margin: 0; cursor: pointer; }
+  .note input:checked { background: var(--accent); border-color: var(--accent); }
+  .note input:checked::after { content: ""; width: 5px; height: 10px; border: solid var(--accent-ink); border-width: 0 2px 2px 0; transform: translateY(-1px) rotate(45deg); }
+  .note input:checked + span { text-decoration: line-through; text-decoration-color: var(--accent); color: var(--ink3); }
+  .note .foot { margin-top: 14px; font-size: 13px; color: var(--ink3); text-align: right; min-height: 22px; }
+
+  /* 이야기 */
+  .story { display: grid; gap: 20px; }
+  @media (min-width: 720px) { .story { grid-template-columns: repeat(3, 1fr); gap: 24px; } }
+  .story article { background: var(--card); border-radius: 18px; padding: 28px 24px; box-shadow: var(--shadow); }
+  .story .ico { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; background: var(--lamp-soft); color: var(--accent); margin-bottom: 18px; }
+  .story h3 { font-family: "Gowun Batang", serif; font-size: 20px; margin: 0 0 8px; }
+  .story p { margin: 0; color: var(--ink2); font-size: 15px; }
+  .quote { margin: 64px auto 0; text-align: center; max-width: 640px; font-family: "Gowun Batang", serif; font-size: clamp(20px, 3vw, 26px); line-height: 1.7; }
+  .quote small { display: block; font-family: "Noto Sans KR", sans-serif; font-size: 13px; color: var(--ink3); margin-top: 12px; }
+
+  /* 객실 */
+  .rooms { display: grid; gap: 24px; }
+  @media (min-width: 760px) { .rooms { grid-template-columns: repeat(3, 1fr); } }
+  .room { background: var(--card); border-radius: 20px; overflow: hidden; box-shadow: var(--shadow); display: flex; flex-direction: column; }
+  .room .pic { position: relative; aspect-ratio: 4 / 3; background: var(--wall); }
+  .room .pic svg { width: 100%; height: 100%; display: block; }
+  .room .body { padding: 22px 22px 24px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
+  .room h3 { margin: 0; font-family: "Gowun Batang", serif; font-size: 22px; }
+  .room .meta { font-size: 13px; color: var(--ink3); }
+  .room p { margin: 6px 0 0; color: var(--ink2); font-size: 15px; }
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+  .tags span { font-size: 12px; padding: 4px 10px; border-radius: 999px; background: var(--bg2); color: var(--ink2); }
+  .time-strip { margin-top: 32px; display: flex; flex-wrap: wrap; gap: 12px 32px; justify-content: center; padding: 20px; border: 1px dashed var(--line); border-radius: 16px; font-size: 15px; color: var(--ink2); }
+  .time-strip b { color: var(--ink); font-weight: 500; margin-left: 6px; }
+
+  /* 머무는 법 */
+  .steps { counter-reset: s; display: grid; gap: 0; max-width: 760px; }
+  .step { display: grid; grid-template-columns: 56px 1fr; gap: 16px; padding: 22px 0; border-top: 1px solid var(--line); }
+  .step:last-child { border-bottom: 1px solid var(--line); }
+  .step::before { counter-increment: s; content: "0" counter(s); font-family: "Gowun Batang", serif; font-size: 26px; color: var(--accent); line-height: 1.2; }
+  .step h3 { margin: 0 0 4px; font-size: 17px; font-weight: 500; }
+  .step p { margin: 0; color: var(--ink2); font-size: 15px; }
+  .howto { display: grid; gap: 48px; }
+  @media (min-width: 900px) { .howto { grid-template-columns: 1.3fr 1fr; gap: 64px; } }
+  .notice { background: var(--card); border-radius: 18px; padding: 26px 24px; box-shadow: var(--shadow); align-self: start; }
+  .notice h3 { margin: 0 0 14px; font-family: "Gowun Batang", serif; font-size: 20px; }
+  .notice ul { margin: 0; padding-left: 18px; color: var(--ink2); font-size: 15px; }
+  .notice li { margin-bottom: 8px; }
+  .notice li::marker { color: var(--accent); }
+
+  /* 손님들 말 */
+  .voices { display: flex; gap: 14px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 4px 16px 12px; margin: 0 -16px; scrollbar-width: none; }
+  .voices::-webkit-scrollbar { display: none; }
+  @media (min-width: 860px) { .voices { display: grid; grid-template-columns: repeat(4, 1fr); overflow: visible; margin: 0; padding: 0; } }
+  .voice { flex: 0 0 72%; scroll-snap-align: start; background: var(--card); border-radius: 18px; padding: 24px 22px; box-shadow: var(--shadow); }
+  .voice p { margin: 0 0 12px; font-family: "Gowun Batang", serif; font-size: 18px; line-height: 1.6; }
+  .voice span { font-size: 13px; color: var(--ink3); }
+
+  /* 동네 */
+  .near { display: grid; gap: 14px; grid-template-columns: 1fr; }
+  @media (min-width: 560px) { .near { grid-template-columns: 1fr 1fr; } }
+  @media (min-width: 900px) { .near { grid-template-columns: repeat(3, 1fr); } }
+  .place { display: flex; gap: 16px; padding: 20px; border-radius: 16px; background: var(--card); box-shadow: var(--shadow); }
+  .place .em { flex: none; width: 46px; height: 46px; border-radius: 50%; background: var(--lamp-soft); display: grid; place-items: center; font-size: 22px; }
+  .place h3 { margin: 0 0 2px; font-size: 16px; font-weight: 500; }
+  .place p { margin: 0; font-size: 14px; color: var(--ink2); line-height: 1.6; }
+
+  /* 오시는 길 */
+  .way { display: grid; gap: 28px; }
+  @media (min-width: 860px) { .way { grid-template-columns: 1.1fr 1fr; gap: 48px; align-items: start; } }
+  .map {
+    position: relative; aspect-ratio: 4 / 3; border-radius: 20px; overflow: hidden; box-shadow: var(--shadow);
+    background: var(--bg2);
+  }
+  .map svg { width: 100%; height: 100%; display: block; }
+  .addr { font-family: "Gowun Batang", serif; font-size: 22px; margin: 0 0 6px; }
+  .info-list { margin: 22px 0 0; padding: 0; list-style: none; }
+  .info-list li { padding: 16px 0; border-top: 1px solid var(--line); display: grid; grid-template-columns: 84px 1fr; gap: 12px; font-size: 15px; }
+  .info-list li > b { font-weight: 500; color: var(--ink3); font-size: 14px; }
+  .info-list li span { color: var(--ink2); }
+  .map-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+
+  /* 마무리 */
+  .closing { text-align: center; padding: 96px 0; background: linear-gradient(var(--bg), var(--bg2)); }
+  .closing h2 { font-family: "Gowun Batang", serif; font-size: clamp(28px, 5vw, 44px); margin: 0 0 14px; line-height: 1.4; }
+  .closing p { color: var(--ink2); margin: 0 0 28px; }
+  footer { padding: 40px 0 120px; font-size: 13px; color: var(--ink3); border-top: 1px solid var(--line); }
+  @media (min-width: 860px) { footer { padding-bottom: 48px; } }
+  footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; }
+  footer p { margin: 0; }
+  .theme-toggle { background: none; border: 1px solid var(--line); color: var(--ink2); border-radius: 999px; padding: 6px 12px; font: inherit; cursor: pointer; }
+
+  /* 모바일 하단 예약 */
+  .dock {
+    position: fixed; left: 12px; right: 12px; bottom: 12px; z-index: 30;
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    background: var(--ink); color: var(--bg); border-radius: 18px; padding: 10px 10px 10px 18px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, .25); transform: translateY(140%); transition: transform .4s ease;
+  }
+  .dock.show { transform: none; }
+  .dock small { display: block; font-size: 11px; opacity: .7; }
+  .dock b { font-family: "Gowun Batang", serif; font-size: 16px; font-weight: 700; }
+  @media (min-width: 860px) { .dock { display: none; } }
+
+  /* 나타나기 */
+  .reveal { opacity: 0; transform: translateY(18px); transition: opacity .9s ease, transform .9s ease; }
+  .reveal.in { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .reveal { opacity: 1; transform: none; transition: none; }
+    .star { animation: none; }
+    .win { transition: none; }
+  }
+</style>
+</head>
+<body>
+
+<header class="top" id="top">
+  <div class="wrap">
+    <a class="logo" href="#"><b>스테이토도</b><small>STAY TODO</small></a>
+    <nav class="menu" aria-label="주요 메뉴">
+      <a href="#story">이야기</a>
+      <a href="#rooms">객실</a>
+      <a href="#howto">머무는 법</a>
+      <a href="#near">동네</a>
+      <a href="#way">오시는 길</a>
+    </nav>
+    <a class="btn sm" href="https://www.yeogi.com/domestic-accommodations/78401" target="_blank" rel="noopener">예약하기</a>
+  </div>
+</header>
+
+<main>
+  <!-- 첫 화면 -->
+  <section class="hero">
+    <div class="wrap">
+      <div class="reveal">
+        <p class="eyebrow">강화읍 · 옛 남문 곁 작은 숙소</p>
+        <h1>작은 방,<br><em>깊은</em> 쉼.</h1>
+        <p class="lead">1층에서 빵 굽는 냄새가 올라오는 오래된 건물 위층.<br>
+          구 남문장이 <b>스테이토도</b>로 다시 불을 켰습니다.<br>
+          넓진 않지만, 그래서 더 포근한 방에서 하룻밤 쉬어 가세요.</p>
+        <div class="actions">
+          <a class="btn" href="https://www.yeogi.com/domestic-accommodations/78401" target="_blank" rel="noopener">빈 방 보고 예약하기 →</a>
+          <a class="btn ghost" href="#way">오시는 길</a>
+        </div>
+      </div>
+      <div class="hero-art reveal" role="img" aria-label="해 질 녘 불이 하나둘 켜지는 스테이토도 건물 그림">
+        <svg viewBox="0 0 400 480" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+          <defs>
+            <radialGradient id="moonGlow"><stop offset="0" stop-color="#fff6dc" stop-opacity=".9"/><stop offset="1" stop-color="#fff6dc" stop-opacity="0"/></radialGradient>
+            <linearGradient id="ground" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#000" stop-opacity=".0"/><stop offset="1" stop-color="#000" stop-opacity=".35"/></linearGradient>
+          </defs>
+          <circle cx="318" cy="82" r="60" fill="url(#moonGlow)"/>
+          <circle cx="318" cy="82" r="18" fill="#fff3d6"/>
+          <g class="stars">
+            <circle class="star" cx="60" cy="50" r="1.4"/>
+            <circle class="star" cx="120" cy="90" r="1" style="animation-delay:1s"/>
+            <circle class="star" cx="200" cy="40" r="1.3" style="animation-delay:2s"/>
+            <circle class="star" cx="250" cy="120" r="1" style="animation-delay:.5s"/>
+            <circle class="star" cx="370" cy="160" r="1.2" style="animation-delay:3s"/>
+            <circle class="star" cx="30" cy="140" r="1" style="animation-delay:1.6s"/>
+          </g>
+          <!-- 먼 산 -->
+          <path d="M0 300 C60 250 110 270 160 240 C220 205 280 250 330 230 C365 216 385 228 400 236 V480 H0Z" fill="#000" opacity=".18"/>
+          <!-- 옆 건물 -->
+          <rect x="0" y="250" width="70" height="230" fill="var(--wall-dark)" opacity=".75"/>
+          <rect x="330" y="270" width="70" height="210" fill="var(--wall-dark)" opacity=".75"/>
+          <rect x="16" y="280" width="16" height="20" class="win" data-delay="2600"/>
+          <rect x="348" y="300" width="16" height="20" class="win" data-delay="3400"/>
+          <!-- 스테이토도 건물 -->
+          <rect x="80" y="170" width="240" height="310" fill="var(--wall)"/>
+          <rect x="74" y="160" width="252" height="14" fill="var(--wall-dark)"/>
+          <!-- 옥상 난간 -->
+          <g stroke="var(--wall-dark)" stroke-width="3"><line x1="90" y1="160" x2="90" y2="140"/><line x1="310" y1="160" x2="310" y2="140"/><line x1="86" y1="142" x2="314" y2="142"/></g>
+          <!-- 간판 -->
+          <rect x="146" y="184" width="108" height="26" rx="4" fill="#2a2420"/>
+          <text x="200" y="202" text-anchor="middle" font-family="Gowun Batang, serif" font-size="13" fill="var(--lamp)" letter-spacing="2">STAY TODO</text>
+          <!-- 3층 창 -->
+          <g>
+            <rect x="100" y="222" width="44" height="40" rx="3" class="win" data-delay="400"/>
+            <rect x="178" y="222" width="44" height="40" rx="3" class="win" data-delay="1500"/>
+            <rect x="256" y="222" width="44" height="40" rx="3" class="win" data-delay="900"/>
+          </g>
+          <!-- 2층 창 -->
+          <g>
+            <rect x="100" y="286" width="44" height="40" rx="3" class="win" data-delay="1200"/>
+            <rect x="178" y="286" width="44" height="40" rx="3" class="win" data-delay="300"/>
+            <rect x="256" y="286" width="44" height="40" rx="3" class="win" data-delay="2000"/>
+          </g>
+          <g stroke="var(--wall-dark)" stroke-width="2">
+            <line x1="122" y1="222" x2="122" y2="262"/><line x1="200" y1="222" x2="200" y2="262"/><line x1="278" y1="222" x2="278" y2="262"/>
+            <line x1="122" y1="286" x2="122" y2="326"/><line x1="200" y1="286" x2="200" y2="326"/><line x1="278" y1="286" x2="278" y2="326"/>
+          </g>
+          <!-- 1층 빵집 -->
+          <path d="M84 350 H316 L306 376 H94Z" fill="var(--accent)"/>
+          <g fill="#fff" opacity=".35"><path d="M110 350 h16 l-3 26 h-10z"/><path d="M146 350 h16 l-2 26 h-12z"/><path d="M184 350 h16 l-1 26 h-14z"/><path d="M222 350 h16 l0 26 h-14z"/><path d="M260 350 h16 l2 26 h-12z"/></g>
+          <rect x="96" y="384" width="140" height="70" rx="3" fill="var(--lamp)" opacity=".85"/>
+          <g fill="#7a4a26" opacity=".7">
+            <ellipse cx="124" cy="440" rx="14" ry="7"/><ellipse cx="160" cy="442" rx="12" ry="6"/><ellipse cx="196" cy="440" rx="15" ry="7"/>
+            <ellipse cx="140" cy="428" rx="11" ry="5"/><ellipse cx="178" cy="428" rx="12" ry="5"/>
+          </g>
+          <rect x="250" y="384" width="52" height="96" rx="3" fill="#2a2420"/>
+          <circle cx="292" cy="434" r="2.5" fill="var(--lamp)"/>
+          <rect x="0" y="454" width="400" height="26" fill="url(#ground)"/>
+          <!-- 가로등 -->
+          <line x1="40" y1="480" x2="40" y2="360" stroke="#2a2420" stroke-width="4"/>
+          <path d="M40 360 q0 -10 12 -10" stroke="#2a2420" stroke-width="4" fill="none"/>
+          <circle cx="54" cy="354" r="6" fill="#fff0c8"/>
+          <circle cx="54" cy="354" r="22" fill="#fff0c8" opacity=".1"/>
+        </svg>
+        <!-- 실제 사진: images/hero.jpg 를 넣으면 그림 대신 표시 -->
+        <img class="photo-slot" src="images/hero.jpg" alt="" onerror="this.remove()">
+      </div>
+    </div>
+  </section>
+
+  <!-- 오늘의 할 일 -->
+  <section class="alt">
+    <div class="wrap todo-grid">
+      <div class="sec-head reveal" style="margin:0">
+        <p class="eyebrow">Stay · To do</p>
+        <h2 class="serif">여기서의 할 일은<br>쉬는 것뿐이에요.</h2>
+        <p>스테이토도라는 이름에는 작은 목록 하나가 숨어 있어요. 바쁜 하루의 할 일 대신, 오늘 밤엔 이런 것들만 해 보세요. 하나씩 눌러 지워도 좋아요.</p>
+      </div>
+      <div class="note reveal">
+        <h3>오늘의 할 일</h3>
+        <ul id="todo">
+          <li><label><input type="checkbox"><span>1층 빵 냄새 따라 아침 빵 고르기</span></label></li>
+          <li><label><input type="checkbox"><span>풍물시장에서 순무김치 맛보기</span></label></li>
+          <li><label><input type="checkbox"><span>남문 옛 성곽길 천천히 걷기</span></label></li>
+          <li><label><input type="checkbox"><span>보송한 호텔 이불 속으로 쏙</span></label></li>
+          <li><label><input type="checkbox"><span>알람 없이 늦잠 자기</span></label></li>
+        </ul>
+        <div class="foot" id="todoFoot" aria-live="polite"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 이야기 -->
+  <section id="story">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <p class="eyebrow">Our story</p>
+        <h2>작아서, 더 포근한 방</h2>
+        <p>오래 이 자리를 지킨 남문장이 이름을 바꾸고 새 옷을 입었습니다. 방의 크기는 그대로지만, 몸이 닿는 모든 것을 새로 골랐어요.</p>
+      </div>
+      <div class="story">
+        <article class="reveal">
+          <div class="ico" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a3 3 0 0 1 3-3h12a3 3 0 0 1 3 3v6"/><path d="M3 18h18M5 9V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v3"/><path d="M8 9h3M13 9h3"/></svg>
+          </div>
+          <h3>호텔식 침구, 전부 새로</h3>
+          <p>이불솜과 베개솜, 수건까지 모두 교체했어요. 이불·매트리스·베개 속에는 방수 커버를 씌워 늘 위생적으로 관리합니다.</p>
+        </article>
+        <article class="reveal">
+          <div class="ico" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v2M5.6 5.6l1.4 1.4M3 12h2M19 12h2M17 7l1.4-1.4"/><path d="M8 14a4 4 0 1 1 8 0c0 1.5-.8 2.5-1.5 3.3-.4.5-.5 1-.5 1.7h-4c0-.7-.1-1.2-.5-1.7C8.8 16.5 8 15.5 8 14Z"/><path d="M10 21h4"/></svg>
+          </div>
+          <h3>작은 방의 아늑함</h3>
+          <p>넓은 방이 주지 못하는 감각이 있어요. 손 닿는 곳에 모든 게 있는 방, 스탠드 하나로 가득 차는 따뜻한 불빛.</p>
+        </article>
+        <article class="reveal">
+          <div class="ico" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>
+          </div>
+          <h3>강화읍 한가운데</h3>
+          <p>강화군청 가까이, 시장과 맛집과 카페가 걸어서 닿는 곳. 여행도 출장도 짐을 풀고 바로 동네로 나설 수 있어요.</p>
+        </article>
+      </div>
+      <p class="quote reveal">“크지 않은 방에서 오히려 마음이 놓였다.”<small>— 스테이토도가 바라는 하룻밤</small></p>
+    </div>
+  </section>
+
+  <!-- 객실 -->
+  <section id="rooms" class="alt">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <p class="eyebrow">Rooms</p>
+        <h2>세 가지 작은 방</h2>
+        <p>혼자, 둘이, 셋이. 머무는 사람 수에 맞춰 고르세요. 모든 객실은 금연이에요.</p>
+      </div>
+      <div class="rooms">
+        <article class="room reveal">
+          <div class="pic">
+            <svg viewBox="0 0 320 240" aria-hidden="true">
+              <rect width="320" height="240" fill="var(--wall)"/>
+              <rect x="0" y="170" width="320" height="70" fill="var(--wall-dark)"/>
+              <rect x="208" y="40" width="70" height="80" rx="4" fill="var(--sky-top)"/><circle cx="252" cy="66" r="7" fill="#fff3d6"/>
+              <line x1="243" y1="40" x2="243" y2="120" stroke="var(--wall)" stroke-width="3"/>
+              <rect x="40" y="110" width="150" height="20" rx="6" fill="#8a6a50"/>
+              <rect x="40" y="128" width="150" height="46" rx="6" fill="#fffaf2"/>
+              <rect x="40" y="128" width="150" height="16" rx="6" fill="var(--lamp)" opacity=".45"/>
+              <rect x="52" y="116" width="44" height="16" rx="7" fill="#fff"/><rect x="104" y="116" width="44" height="16" rx="7" fill="#fff"/>
+              <rect x="200" y="140" width="34" height="34" rx="3" fill="#8a6a50"/>
+              <circle cx="217" cy="104" r="40" fill="var(--lamp)" opacity=".22"/>
+              <path d="M207 126 h20 l-5 -18 h-10z" fill="var(--lamp)"/><line x1="217" y1="126" x2="217" y2="140" stroke="#5a4636" stroke-width="2"/>
+            </svg>
+            <img class="photo-slot" src="images/room-standard.jpg" alt="일반실" onerror="this.remove()">
+          </div>
+          <div class="body">
+            <h3>일반실</h3>
+            <div class="meta">기준 2인 · 최대 2인</div>
+            <p>침대 하나, 스탠드 하나. 둘이 기대어 쉬기 좋은 가장 아늑한 방이에요.</p>
+            <div class="tags"><span>더블 침대</span><span>호텔식 침구</span><span>무선 인터넷</span></div>
+          </div>
+        </article>
+        <article class="room reveal">
+          <div class="pic">
+            <svg viewBox="0 0 320 240" aria-hidden="true">
+              <rect width="320" height="240" fill="var(--wall)"/>
+              <rect x="0" y="170" width="320" height="70" fill="var(--wall-dark)"/>
+              <rect x="125" y="36" width="70" height="60" rx="4" fill="var(--sky-top)"/><line x1="160" y1="36" x2="160" y2="96" stroke="var(--wall)" stroke-width="3"/>
+              <g><rect x="30" y="118" width="100" height="16" rx="5" fill="#8a6a50"/><rect x="30" y="132" width="100" height="42" rx="5" fill="#fffaf2"/><rect x="48" y="122" width="44" height="14" rx="6" fill="#fff"/></g>
+              <g><rect x="190" y="118" width="100" height="16" rx="5" fill="#8a6a50"/><rect x="190" y="132" width="100" height="42" rx="5" fill="#fffaf2"/><rect x="208" y="122" width="44" height="14" rx="6" fill="#fff"/></g>
+              <rect x="143" y="144" width="34" height="30" rx="3" fill="#8a6a50"/>
+              <circle cx="160" cy="118" r="36" fill="var(--lamp)" opacity=".22"/>
+              <path d="M151 136 h18 l-4 -16 h-10z" fill="var(--lamp)"/><line x1="160" y1="136" x2="160" y2="144" stroke="#5a4636" stroke-width="2"/>
+            </svg>
+            <img class="photo-slot" src="images/room-twin.jpg" alt="트윈룸" onerror="this.remove()">
+          </div>
+          <div class="body">
+            <h3>트윈룸</h3>
+            <div class="meta">기준 2인 · 최대 2인 · 싱글 2개</div>
+            <p>각자의 침대에서 편히. 친구와의 여행, 동료와의 출장에 알맞아요.</p>
+            <div class="tags"><span>싱글 침대 2</span><span>호텔식 침구</span><span>무선 인터넷</span></div>
+          </div>
+        </article>
+        <article class="room reveal">
+          <div class="pic">
+            <svg viewBox="0 0 320 240" aria-hidden="true">
+              <rect width="320" height="240" fill="var(--wall)"/>
+              <rect x="0" y="170" width="320" height="70" fill="var(--wall-dark)"/>
+              <rect x="240" y="30" width="56" height="56" rx="4" fill="var(--sky-top)"/><circle cx="262" cy="52" r="5" fill="#fff3d6"/>
+              <g><rect x="14" y="124" width="88" height="14" rx="5" fill="#8a6a50"/><rect x="14" y="136" width="88" height="38" rx="5" fill="#fffaf2"/><rect x="34" y="127" width="40" height="13" rx="6" fill="#fff"/></g>
+              <g><rect x="116" y="124" width="88" height="14" rx="5" fill="#8a6a50"/><rect x="116" y="136" width="88" height="38" rx="5" fill="#fffaf2"/><rect x="136" y="127" width="40" height="13" rx="6" fill="#fff"/></g>
+              <g><rect x="218" y="124" width="88" height="14" rx="5" fill="#8a6a50"/><rect x="218" y="136" width="88" height="38" rx="5" fill="#fffaf2"/><rect x="238" y="127" width="40" height="13" rx="6" fill="#fff"/></g>
+              <rect x="14" y="152" width="292" height="10" fill="var(--lamp)" opacity=".25"/>
+              <circle cx="160" cy="70" r="40" fill="var(--lamp)" opacity=".18"/>
+              <line x1="160" y1="0" x2="160" y2="58" stroke="#5a4636" stroke-width="2"/><path d="M148 70 q12 -18 24 0z" fill="var(--lamp)"/>
+            </svg>
+            <img class="photo-slot" src="images/room-triple.jpg" alt="트리플룸" onerror="this.remove()">
+          </div>
+          <div class="body">
+            <h3>트리플룸</h3>
+            <div class="meta">기준 3인 · 최대 3인 · 싱글 3개</div>
+            <p>나란히 놓인 세 개의 침대. 셋이 함께 떠나온 여행의 밤을 위해.</p>
+            <div class="tags"><span>싱글 침대 3</span><span>호텔식 침구</span><span>무선 인터넷</span></div>
+          </div>
+        </article>
+      </div>
+      <div class="time-strip reveal">
+        <span>입실<b>18:00</b></span>
+        <span>퇴실<b>11:00</b></span>
+        <span>대실<b>3시간</b></span>
+        <span>요금<b>예약 페이지에서 확인</b></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 머무는 법 -->
+  <section id="howto">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <p class="eyebrow">How to stay</p>
+        <h2>마주치지 않아도<br>편안하게</h2>
+        <p>스테이토도는 비대면으로 운영해요. 누구의 눈치도 보지 않고 조용히 들어와 조용히 쉬어 가세요.</p>
+      </div>
+      <div class="howto">
+        <div class="steps">
+          <div class="step reveal"><div><h3>예약하기</h3><p>여기어때에서 원하는 날짜와 객실을 골라 예약해 주세요.</p></div></div>
+          <div class="step reveal"><div><h3>문자로 받는 객실 비밀번호</h3><p>입실 전에 객실 번호와 비밀번호를 문자로 보내 드려요. 프런트에 들를 필요 없이 바로 방으로.</p></div></div>
+          <div class="step reveal"><div><h3>편히 쉬기</h3><p>커피포트와 정수기는 3층 안내실 앞에 준비되어 있어요. 따뜻한 차 한 잔과 함께.</p></div></div>
+          <div class="step reveal"><div><h3>가볍게 퇴실</h3><p>테이블 위 카드키를 3층 카운터 바구니에 넣고 나서면 끝이에요.</p></div></div>
+        </div>
+        <aside class="notice reveal">
+          <h3>머물기 전에</h3>
+          <ul>
+            <li>모든 객실은 <b>금연</b>이에요. 흡연은 옥상에서만 가능합니다.</li>
+            <li>방이 아담하고 조용한 쉼을 위한 숙소라, <b>어린아이와 함께하는 숙박은 권하지 않아요.</b></li>
+            <li>일회용 어메니티는 무료로 제공되지 않을 수 있어요. 필요하시면 미리 문의해 주세요.</li>
+            <li>예약 전에 객실 사진과 설명을 꼭 확인해 주세요.</li>
+          </ul>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- 손님들 말 -->
+  <section class="alt">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <p class="eyebrow">Guests say</p>
+        <h2>다녀간 분들이 자주 하는 말</h2>
+      </div>
+      <div class="voices reveal">
+        <div class="voice"><p>호텔 침구가 정말 포근해요.</p><span>일반실 손님</span></div>
+        <div class="voice"><p>바로 앞 공영주차장이 넓어서 편했어요.</p><span>트윈룸 손님</span></div>
+        <div class="voice"><p>시장이랑 맛집이 가까워 동선이 좋아요.</p><span>여행 손님</span></div>
+        <div class="voice"><p>출장길에 조용히 잘 쉬다 갑니다.</p><span>출장 손님</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 동네 -->
+  <section id="near">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <p class="eyebrow">Neighborhood</p>
+        <h2>짐 풀고, 걸어서 강화</h2>
+        <p>강화읍 옛 도심은 천천히 걸을수록 좋은 동네예요. 숙소에서 나서면 이런 곳들이 가까이 있어요.</p>
+      </div>
+      <div class="near">
+        <div class="place reveal"><div class="em" aria-hidden="true">🥨</div><div><h3>1층 독일빵집</h3><p>건물 1층의 빵집. 아침은 갓 구운 빵으로.</p></div></div>
+        <div class="place reveal"><div class="em" aria-hidden="true">🏮</div><div><h3>강화풍물시장</h3><p>순무김치, 밴댕이, 강화 쌀. 강화의 맛이 다 모인 곳.</p></div></div>
+        <div class="place reveal"><div class="em" aria-hidden="true">🏯</div><div><h3>강화산성 남문</h3><p>숙소의 옛 이름이 된 성문. 성곽을 따라 산책해 보세요.</p></div></div>
+        <div class="place reveal"><div class="em" aria-hidden="true">⛪</div><div><h3>성공회 강화성당</h3><p>한옥으로 지은 오래된 성당. 고요한 마당이 아름다워요.</p></div></div>
+        <div class="place reveal"><div class="em" aria-hidden="true">🌿</div><div><h3>용흥궁 · 고려궁지</h3><p>읍내 골목 사이 숨은 옛 궁터와 정갈한 한옥.</p></div></div>
+        <div class="place reveal"><div class="em" aria-hidden="true">☕</div><div><h3>조양방직</h3><p>옛 방직공장을 고친 카페. 강화의 오래된 시간이 머문 곳.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 오시는 길 -->
+  <section id="way" class="alt">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <p class="eyebrow">Location</p>
+        <h2>오시는 길</h2>
+      </div>
+      <div class="way">
+        <div class="map reveal" role="img" aria-label="남문 공영주차장 옆 스테이토도 위치 약도">
+          <svg viewBox="0 0 400 300" aria-hidden="true">
+            <rect width="400" height="300" fill="var(--bg2)"/>
+            <g stroke="var(--card)" stroke-width="18" stroke-linecap="round" fill="none">
+              <path d="M-10 190 C100 180 220 200 410 170"/>
+              <path d="M150 -10 C160 90 170 200 160 310"/>
+            </g>
+            <g stroke="var(--card)" stroke-width="8" stroke-linecap="round" fill="none" opacity=".9">
+              <path d="M260 -10 C250 80 270 130 290 310"/>
+              <path d="M-10 80 C80 90 200 70 410 95"/>
+            </g>
+            <rect x="182" y="210" width="76" height="52" rx="6" fill="var(--wall-dark)"/>
+            <text x="220" y="241" text-anchor="middle" font-size="12" fill="var(--ink2)" font-family="Noto Sans KR, sans-serif">P 남문 공영</text>
+            <text x="16" y="288" font-size="11" fill="var(--ink3)" font-family="Noto Sans KR, sans-serif">약도 · 정확한 위치는 지도 앱에서</text>
+            <circle cx="214" cy="160" r="34" fill="var(--accent)" opacity=".15"/>
+            <path d="M214 172 C204 160 198 152 198 144 a16 16 0 0 1 32 0 c0 8 -6 16 -16 28z" fill="var(--accent)"/>
+            <circle cx="214" cy="144" r="6" fill="var(--accent-ink)"/>
+            <text x="214" y="200" text-anchor="middle" font-size="14" font-weight="700" fill="var(--ink)" font-family="Gowun Batang, serif">스테이토도</text>
+          </svg>
+        </div>
+        <div class="reveal">
+          <p class="addr">인천 강화군 강화읍 신문리 5-3</p>
+          <p style="margin:0;color:var(--ink2)">1층 독일빵집 건물 · 강화군청 인근 · 남문 공용주차장 바로 앞</p>
+          <ul class="info-list">
+            <li><b>주차</b><span>건물 주차 1대 + 바로 앞 <b>남문 공용주차장</b>(탑차 가능)<br>평일 17:00~다음 날 09:00, 주말·공휴일 24시간 무료<br>그 외 유료 시간엔 <b>최대 2시간 주차비 지원</b></span></li>
+            <li><b>입·퇴실</b><span>입실 18:00 · 퇴실 11:00 (비대면)</span></li>
+            <li><b>문의</b><span>예약 페이지의 숙소 문의를 이용해 주세요.</span></li>
+          </ul>
+          <div class="map-links">
+            <a class="btn sm" href="https://map.kakao.com/link/map/스테이토도,37.7452283,126.4867342" target="_blank" rel="noopener">카카오맵</a>
+            <a class="btn sm ghost" href="https://map.naver.com/p/search/강화%20스테이토도" target="_blank" rel="noopener">네이버 지도</a>
+            <a class="btn sm ghost" href="https://map.kakao.com/link/to/스테이토도,37.7452283,126.4867342" target="_blank" rel="noopener">길찾기</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="closing">
+    <div class="wrap reveal">
+      <h2>오늘 밤은,<br>작은 방에서 푹.</h2>
+      <p>강화에 오시면 스테이토도에 불을 켜 둘게요.</p>
+      <a class="btn" href="https://www.yeogi.com/domestic-accommodations/78401" target="_blank" rel="noopener">빈 방 보고 예약하기 →</a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div>
+      <p><b style="color:var(--ink)">스테이토도</b> (구 남문장) · 정식 숙박업 등록 숙소</p>
+      <p>인천 강화군 강화읍 신문리 5-3</p>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center">
+      <button class="theme-toggle" id="themeBtn" type="button">밤/낮 화면</button>
+      <p>© 스테이토도</p>
+    </div>
+  </div>
+</footer>
+
+<div class="dock" id="dock">
+  <div><small>강화읍 · 작은 방 깊은 쉼</small><b>스테이토도</b></div>
+  <a class="btn sm" href="https://www.yeogi.com/domestic-accommodations/78401" target="_blank" rel="noopener">예약하기</a>
+</div>
+
+<script>
+  (function () {
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // 창문 불이 하나둘 켜짐
+    document.querySelectorAll('.win').forEach(function (w) {
+      var d = reduce ? 0 : +w.getAttribute('data-delay') || 0;
+      setTimeout(function () { w.classList.add('on'); }, d + (reduce ? 0 : 500));
+    });
+
+    // 스크롤하면 나타나기
+    var els = document.querySelectorAll('.reveal');
+    if ('IntersectionObserver' in window && !reduce) {
+      var io = new IntersectionObserver(function (es) {
+        es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+      }, { threshold: .12, rootMargin: '0px 0px -40px 0px' });
+      els.forEach(function (el) { io.observe(el); });
+    } else {
+      els.forEach(function (el) { el.classList.add('in'); });
+    }
+
+    // 상단 선·모바일 예약 바
+    var top = document.getElementById('top'), dock = document.getElementById('dock');
+    function onScroll() {
+      var y = window.scrollY;
+      top.classList.toggle('scrolled', y > 8);
+      var nearEnd = window.innerHeight + y > document.body.scrollHeight - 260;
+      dock.classList.toggle('show', y > 520 && !nearEnd);
+    }
+    window.addEventListener('scroll', onScroll, { passive: true }); onScroll();
+
+    // 오늘의 할 일
+    var boxes = document.querySelectorAll('#todo input'), foot = document.getElementById('todoFoot');
+    var msgs = ['', '좋아요, 하나 끝.', '벌써 둘이나.', '반쯤 쉬었어요.', '거의 다 쉬었어요.', '오늘 할 일 끝. 이제 푹 주무세요 ☾'];
+    boxes.forEach(function (b) {
+      b.addEventListener('change', function () {
+        var n = Array.prototype.filter.call(boxes, function (x) { return x.checked; }).length;
+        foot.textContent = msgs[n] || '';
+      });
+    });
+
+    // 밤/낮 화면 (이 기기에만 저장)
+    var root = document.documentElement, btn = document.getElementById('themeBtn');
+    try { var saved = localStorage.getItem('stay-todo-theme'); if (saved) root.setAttribute('data-theme', saved); } catch (e) {}
+    btn.addEventListener('click', function () {
+      var cur = root.getAttribute('data-theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      var next = cur === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      try { localStorage.setItem('stay-todo-theme', next); } catch (e) {}
+    });
+  })();
+</script>
+</body>
+</html>
